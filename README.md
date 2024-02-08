@@ -1,4 +1,4 @@
-# MongDB Atlas API SDK
+# MongoDB Atlas API SDK
 
 ### Constructor
 
