@@ -1,6 +1,6 @@
 {
   "name": "mongodb-altas-api-sdk",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "MongoDB Atlas Data API SDK",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
