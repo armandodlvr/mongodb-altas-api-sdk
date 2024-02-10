@@ -1,4 +1,5 @@
-# MongoDB Atlas API SDK
+# MongoDB Atlas Data API
+[Documentation](https://www.mongodb.com/docs/atlas/app-services/data-api/openapi/)
 
 ### Constructor
 
