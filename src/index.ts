@@ -13,6 +13,18 @@ export interface CustomJwtAuthOptions {
   jwtTokenString: string
 }
 
+export type Documents = {
+  documents: Document[]
+}
+
+export type UpdateResult = {
+  matchedCount: number
+  modifiedCount: number
+  upsertedId?: string
+}
+
+export type DeleteResult = { deletedCount: number }
+
 export type AuthOptions =
   | EmailPasswordAuthOptions
   | ApiKeyAuthOptions
@@ -77,7 +89,7 @@ export class Database {
     this.client = client
   }
 
-  collection<T = Document>(name: string) {
+  collection<T extends Document>(name: string) {
     return new Collection<T>(name, this)
   }
 }
@@ -104,8 +116,8 @@ export class Collection<T> {
   async findOne(
     filter: Document,
     { projection }: { projection?: Document } = {}
-  ): Promise<T> {
-    const result = await this.callApi('findOne', {
+  ): Promise<Document> {
+    const result = await this.callApi<Document>('findOne', {
       filter,
       projection
     })
@@ -126,8 +138,8 @@ export class Collection<T> {
       limit?: number
       skip?: number
     } = {}
-  ): Promise<T[]> {
-    const result = await this.callApi('find', {
+  ): Promise<Document[]> {
+    const result = await this.callApi<Documents>('find', {
       filter,
       projection,
       sort,
@@ -141,8 +153,8 @@ export class Collection<T> {
     filter: Document,
     update: Document,
     { upsert }: { upsert?: boolean } = {}
-  ): Promise<{ matchedCount: number; modifiedCount: number; upsertedId?: string }> {
-    return this.callApi('updateOne', {
+  ): Promise<UpdateResult> {
+    return this.callApi<UpdateResult>('updateOne', {
       filter,
       update,
       upsert
@@ -153,8 +165,8 @@ export class Collection<T> {
     filter: Document,
     update: Document,
     { upsert }: { upsert?: boolean } = {}
-  ): Promise<{ matchedCount: number; modifiedCount: number; upsertedId?: string }> {
-    return this.callApi('updateMany', {
+  ): Promise<UpdateResult> {
+    return this.callApi<UpdateResult>('updateMany', {
       filter,
       update,
       upsert
@@ -165,24 +177,24 @@ export class Collection<T> {
     filter: Document,
     replacement: Document,
     { upsert }: { upsert?: boolean } = {}
-  ): Promise<{ matchedCount: number; modifiedCount: number; upsertedId?: string }> {
-    return this.callApi('replaceOne', {
+  ): Promise<UpdateResult> {
+    return this.callApi<UpdateResult>('replaceOne', {
       filter,
       replacement,
       upsert
     })
   }
 
-  deleteOne(filter: Document): Promise<{ deletedCount: number }> {
-    return this.callApi('deleteOne', { filter })
+  deleteOne(filter: Document): Promise<DeleteResult> {
+    return this.callApi<DeleteResult>('deleteOne', { filter })
   }
 
-  deleteMany(filter: Document): Promise<{ deletedCount: number }> {
-    return this.callApi('deleteMany', { filter })
+  deleteMany(filter: Document): Promise<DeleteResult> {
+    return this.callApi<DeleteResult>('deleteMany', { filter })
   }
 
-  async aggregate<T = Document>(pipeline: Document[]): Promise<T[]> {
-    const result = await this.callApi('aggregate', { pipeline })
+  async aggregate<T extends Document>(pipeline: Document[]): Promise<T[]> {
+    const result = await this.callApi<T>('aggregate', { pipeline })
     return result.documents
   }
 
@@ -221,7 +233,7 @@ export class Collection<T> {
     return 0
   }
 
-  async callApi<T = Document>(method: string, extra: Document): Promise<T> {
+  async callApi<T>(method: string, extra: Document): Promise<T> {
     const { endpoint, dataSource, headers } = this.client
     const url = `${endpoint}/action/${method}`
 
