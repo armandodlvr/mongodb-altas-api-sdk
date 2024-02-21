@@ -248,9 +248,8 @@ export class Collection<T> {
       })
     })
 
-    const body = await response.text()
-
     if (!response.ok) {
+      const body = await response.text()
       throw new Error(`${response.statusText}: ${body}`)
     }
 

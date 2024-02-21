@@ -9,6 +9,14 @@
     "MongoDB cloud data API",
     "MongoDB Atlas data API SDK"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/armandodlvr/mongodb-altas-api-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/armandodlvr/mongodb-altas-api-sdk/issues"
+  },
+  "homepage": "https://github.com/armandodlvr/mongodb-altas-api-sdk#readme",
   "scripts": {
     "build": "tsc",
     "test": "jest",
