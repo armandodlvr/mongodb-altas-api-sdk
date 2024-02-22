@@ -56,7 +56,7 @@ interface UserSchema {
 }
 
 const db = client.database('test')
-const users = db.collection<UserSchema>('users')
+const users = db.collection('users')
 ```
 
 ### Insert
@@ -93,7 +93,7 @@ const insertIds = await users.insertMany([
 #### findOne
 
 ```ts
-const user1_id = await users.findOne({
+const user1_id = await users.findOne<UserSchema>({
   _id: new ObjectId('SOME OBJECTID STRING')
 })
 ```
@@ -101,7 +101,7 @@ const user1_id = await users.findOne({
 #### find
 
 ```ts
-const allActiveUsers = await users.find({ active: true })
+const allActiveUsers = await users.find<UserSchema>({ active: true })
 ```
 
 ### Count
@@ -123,7 +123,7 @@ const estimatedCount = await users.estimatedDocumentCount()
 ### Aggregation
 
 ```ts
-const docs = await users.aggregate([
+const docs = await users.aggregate<UserSchema>([
   { $match: { username: 'many' } },
   { $group: { _id: '$username', total: { $sum: 1 } } }
 ])
