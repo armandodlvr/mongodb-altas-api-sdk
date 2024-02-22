@@ -17,6 +17,14 @@ export type Documents = {
   documents: Document[]
 }
 
+export type InsertOneResult = {
+  insertedId: string
+}
+
+export type InsertManyResult = {
+  insertedIds: string[]
+}
+
 export type UpdateResult = {
   matchedCount: number
   modifiedCount: number
@@ -34,13 +42,6 @@ export interface MongoClientConstructorOptions {
   dataSource: string
   auth: AuthOptions
   endpoint: string
-}
-
-export type MongoInsertOne = {
-  dataSource: string
-  database: string
-  collection: string
-  document: Document
 }
 
 export class MongoClient {
@@ -89,12 +90,12 @@ export class Database {
     this.client = client
   }
 
-  collection<T extends Document>(name: string) {
-    return new Collection<T>(name, this)
+  collection(name: string) {
+    return new Collection(name, this)
   }
 }
 
-export class Collection<T> {
+export class Collection {
   name: string
   database: Database
   client: MongoClient
@@ -105,19 +106,19 @@ export class Collection<T> {
     this.client = database.client
   }
 
-  insertOne(doc: T): Promise<MongoInsertOne> {
-    return this.callApi<MongoInsertOne>('insertOne', { document: doc })
+  insertOne(doc: Document): Promise<InsertOneResult> {
+    return this.callApi<InsertOneResult>('insertOne', { document: doc })
   }
 
-  insertMany(docs: T[]): Promise<{ insertedIds: string[] }> {
-    return this.callApi<{ insertedIds: string[] }>('insertMany', { documents: docs })
+  insertMany(docs: Document[]): Promise<InsertManyResult> {
+    return this.callApi<InsertManyResult>('insertMany', { documents: docs })
   }
 
-  async findOne(
+  async findOne<T extends Document>(
     filter: Document,
     { projection }: { projection?: Document } = {}
-  ): Promise<Document> {
-    const result = await this.callApi<Document>('findOne', {
+  ): Promise<T> {
+    const result = await this.callApi<T>('findOne', {
       filter,
       projection
     })
@@ -125,7 +126,7 @@ export class Collection<T> {
     return result.document
   }
 
-  async find(
+  async find<T extends Document>(
     filter?: Document,
     {
       projection,
@@ -138,8 +139,8 @@ export class Collection<T> {
       limit?: number
       skip?: number
     } = {}
-  ): Promise<Document[]> {
-    const result = await this.callApi<Documents>('find', {
+  ): Promise<T[]> {
+    const result = await this.callApi<T>('find', {
       filter,
       projection,
       sort,
